@@ -1,31 +1,29 @@
+import Header from "@/components/Header";
+import { api } from "@/convex/_generated/api";
 import { useTheme } from "@/hooks/useTheme";
-import { StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
+import { createIndexStyles } from "@/styles";
+import { useQuery } from "convex/react";
+import { LinearGradient } from 'expo-linear-gradient';
+import { StatusBar, Text, TouchableWithoutFeedback } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
-  const { isDarkMode, toggleDarkMode } = useTheme()
+  const { isDarkMode, toggleDarkMode, colors } = useTheme()
+  const styles = createIndexStyles(colors);
+  const todos = useQuery(api.todos.getTodos);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.content}>Edit app/index.tsx to edit this screen.</Text>
-      <TouchableWithoutFeedback onPress={toggleDarkMode}>
-        <Text>Toggle {isDarkMode ? "Dark" : "Light"} Mode</Text>
-      </TouchableWithoutFeedback>
-    </View>
+    <LinearGradient colors={colors.gradients.background} style={styles.container}>
+      <StatusBar barStyle={colors.statusBarStyle}></StatusBar>
+      <SafeAreaView style={styles.safeArea}>
+        <Header></Header>
+        <TouchableWithoutFeedback onPress={toggleDarkMode} >
+          <Text>Toggle {isDarkMode ? "Dark" : "Light"} Mode</Text>
+        </TouchableWithoutFeedback>
+        {todos?.map(({ _id, text }) => <Text key={_id}>{text}</Text>)}
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  content: {
-    fontSize: 18,
-  },
-  link: {
-    color: "#00f"
-  }
-})
 
