@@ -120,6 +120,7 @@ export const createIndexStyles = (colors: ColorScheme) => {
         todoListContent: {
             paddingHorizontal: 24,
             paddingBottom: 100,
+            gap: 12,
         },
         emptyListContainer: {
             flexGrow: 1,

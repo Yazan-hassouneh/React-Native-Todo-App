@@ -25,6 +25,15 @@ export const toggleTodo = mutation({
     }
 })
 
+export const editTodo = mutation({
+    args: { id: v.id("todos"), text: v.string() },
+    handler: async (ctx, args) => {
+        const todo = await ctx.db.get(args.id)
+        if (!todo) throw new ConvexError("Todo Not exist")
+        await ctx.db.patch(args.id, { text: args.text })
+    }
+})
+
 export const deleteTodo = mutation({
     args: { id: v.id("todos") },
     handler: async (ctx, args) => {

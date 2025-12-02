@@ -1,26 +1,52 @@
+import EmptyState from "@/components/EmptyState";
 import Header from "@/components/Header";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import TodoInput from "@/components/TodoInput";
+import TodoItem from "@/components/TodoItem";
 import { api } from "@/convex/_generated/api";
+import { Doc } from "@/convex/_generated/dataModel";
 import { useTheme } from "@/hooks/useTheme";
 import { createIndexStyles } from "@/styles";
 import { useQuery } from "convex/react";
 import { LinearGradient } from 'expo-linear-gradient';
-import { StatusBar, Text, TouchableWithoutFeedback } from "react-native";
+import { FlatList, StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+type Todo = Doc<"todos">
+
 export default function Index() {
-  const { isDarkMode, toggleDarkMode, colors } = useTheme()
+  const { colors } = useTheme()
   const styles = createIndexStyles(colors);
   const todos = useQuery(api.todos.getTodos);
+  const isLoading = todos === undefined
+
+  if (isLoading) {
+    return <LoadingSpinner></LoadingSpinner>
+  }
+
+  const renderTodos = ({ item }: { item: Todo }) => {
+    return (
+      <TodoItem todo={item}></TodoItem>
+    )
+  }
 
   return (
     <LinearGradient colors={colors.gradients.background} style={styles.container}>
       <StatusBar barStyle={colors.statusBarStyle}></StatusBar>
       <SafeAreaView style={styles.safeArea}>
+        {/* Header */}
         <Header></Header>
-        <TouchableWithoutFeedback onPress={toggleDarkMode} >
-          <Text>Toggle {isDarkMode ? "Dark" : "Light"} Mode</Text>
-        </TouchableWithoutFeedback>
-        {todos?.map(({ _id, text }) => <Text key={_id}>{text}</Text>)}
+        {/* Input */}
+        <TodoInput></TodoInput>
+        {/* Todos List */}
+        <FlatList
+          data={todos}
+          renderItem={renderTodos}
+          keyExtractor={(item) => item._id}
+          style={styles.todoList}
+          contentContainerStyle={styles.todoListContent}
+          ListEmptyComponent={<EmptyState></EmptyState>} />
+
       </SafeAreaView>
     </LinearGradient>
   );
