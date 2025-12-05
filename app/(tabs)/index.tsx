@@ -3,16 +3,15 @@ import Header from "@/components/Header";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import TodoInput from "@/components/TodoInput";
 import TodoItem from "@/components/TodoItem";
+import { EditTodoProvider } from "@/contexts/EditingTodoContext";
 import { api } from "@/convex/_generated/api";
-import { Doc } from "@/convex/_generated/dataModel";
 import { useTheme } from "@/hooks/useTheme";
 import { createIndexStyles } from "@/styles";
+import { Todo } from "@/types/todoTypes";
 import { useQuery } from "convex/react";
 import { LinearGradient } from 'expo-linear-gradient';
 import { FlatList, StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-type Todo = Doc<"todos">
 
 export default function Index() {
   const { colors } = useTheme()
@@ -31,24 +30,26 @@ export default function Index() {
   }
 
   return (
-    <LinearGradient colors={colors.gradients.background} style={styles.container}>
-      <StatusBar barStyle={colors.statusBarStyle}></StatusBar>
-      <SafeAreaView style={styles.safeArea}>
-        {/* Header */}
-        <Header></Header>
-        {/* Input */}
-        <TodoInput></TodoInput>
-        {/* Todos List */}
-        <FlatList
-          data={todos}
-          renderItem={renderTodos}
-          keyExtractor={(item) => item._id}
-          style={styles.todoList}
-          contentContainerStyle={styles.todoListContent}
-          ListEmptyComponent={<EmptyState></EmptyState>} />
+    <EditTodoProvider>
+      <LinearGradient colors={colors.gradients.background} style={styles.container}>
+        <StatusBar barStyle={colors.statusBarStyle}></StatusBar>
+        <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <Header></Header>
+          {/* Input */}
+          <TodoInput></TodoInput>
+          {/* Todos List */}
+          <FlatList
+            data={todos}
+            renderItem={renderTodos}
+            keyExtractor={(item) => item._id}
+            style={styles.todoList}
+            contentContainerStyle={styles.todoListContent}
+            ListEmptyComponent={<EmptyState></EmptyState>} />
 
-      </SafeAreaView>
-    </LinearGradient>
+        </SafeAreaView>
+      </LinearGradient>
+    </EditTodoProvider>
   );
 }
 
